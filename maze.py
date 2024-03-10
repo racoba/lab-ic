@@ -46,8 +46,6 @@ def generate_walls():
                and random.choice([True, False, False]):  
                 walls.append([i, j])
 
-    
-
     return walls
 
 
@@ -65,6 +63,45 @@ def generate_water(slope):
             water.append([i, j])
 
     return water
+
+def dfs():
+    visitedRow = []
+    distanceRow = {}
+    adjRow = []
+
+                         #[x,y]
+    actualPos = [player_pos[0], player_pos[1] ]
+    actualPosDict = (player_pos[0], player_pos[1] )
+    
+    distanceRow[actualPosDict] = 0
+    
+    while actualPos not in treasures:
+        visitedRow.append(actualPos)
+       
+        up = actualPos[0] - 1 , actualPos[1]
+        down = actualPos[0] + 1 , actualPos[1]
+        left = actualPos[0], actualPos[1] -1
+        right = actualPos[0] , actualPos[1] + 1
+        
+        if up not in visitedRow:
+            adjRow.append({"up": up})
+            distanceRow[up] = distanceRow[actualPosDict] + 1
+        if down not in visitedRow:
+            adjRow.append({"down": down})
+            distanceRow[down] = distanceRow[actualPosDict] + 1
+        if left not in visitedRow:
+            adjRow.append({"left": left})
+            distanceRow[left] = distanceRow[actualPosDict] + 1
+        if right not in visitedRow:
+            adjRow.append({"right": right})
+            distanceRow[right] = distanceRow[actualPosDict] + 1
+
+
+        actualPosDict = adjRow.pop(0)
+        actualPos[0] = actualPosDict[0]
+        actualPos[1] = actualPosDict[1]
+        print(actualPos)
+        
 
 slope = 0.5  # This is a placeholder; adjust your slope logic as needed
 water = generate_water(slope)
@@ -103,7 +140,7 @@ def move_player():
     
     if random.randint(0, 5500) == 0:
       return 'GIVEUP'
-    
+    dfs()
     return random.choice(['UP', 'DOWN', 'LEFT', 'RIGHT'])
     
 def manual_move():
@@ -138,13 +175,13 @@ while running:
     
     next_pos = player_pos
     if direction == 'UP':
-        next_pos = (player_pos[0], player_pos[1] - 1) 
+        next_pos = (player_pos[0] -1 , player_pos[1]) 
     elif direction == 'DOWN':
-        next_pos = (player_pos[0], player_pos[1] + 1) 
-    elif direction == 'LEFT':
-        next_pos = (player_pos[0] - 1, player_pos[1]) 
-    elif direction == 'RIGHT':
         next_pos = (player_pos[0] + 1, player_pos[1]) 
+    elif direction == 'LEFT':
+        next_pos = (player_pos[0], player_pos[1] - 1) 
+    elif direction == 'RIGHT':
+        next_pos = (player_pos[0], player_pos[1] + 1) 
     elif direction == "NONE":
         score += 1
         steps -= 1

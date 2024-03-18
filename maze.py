@@ -167,6 +167,7 @@ def move_player():
     
     if random.randint(0, 5500) == 0:
       return 'GIVEUP'
+    # RETORNAR UM POP DE UMA LISTA DO PATH CONVERTIDO
     return random.choice(['UP', 'DOWN', 'LEFT', 'RIGHT'])
     
 def manual_move():

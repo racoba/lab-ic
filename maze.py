@@ -16,6 +16,11 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
 NUM_TREASURES = 10
+m=[['.' for a in range(maze_size)] for x in range(maze_size)]
+start_row = 0
+start_col = 0
+end_row = 0
+end_col = 0
 
 # Set up the display
 screen = pygame.display.set_mode((width, height))
@@ -47,6 +52,18 @@ def generate_walls():
 
     return walls
 
+def fullfillMap():
+    for treasure in treasures:
+        
+        m[treasure[0]][treasure[1]] = 'T'
+    for wall in walls:
+        m[wall[0]][wall[1]] = '#'
+    for w in water:
+        m[w[0]][w[1]] = '~'
+    m[player_pos[0]][player_pos[1]] = 'P'
+    pass
+    
+
 
 def generate_water(slope):
     water = []
@@ -65,29 +82,27 @@ def generate_water(slope):
 
 
 
-
-
 def solve(start_row, start_col):
     q = []
     q.append((start_row, start_col))
-    visited = [[False for i in range(cols)] for j in range(rows)]
+    visited = [[False for i in range(maze_size)] for j in range(maze_size)]
     visited[start_row][start_col] = True
 
-    prev = [[None for i in range(cols)] for j in range(rows)]
+    prev = [[None for i in range(maze_size)] for j in range(maze_size)]
     while len(q) > 0:
         row, col = q.pop(0)
-        if tuple(m[row][col]) in treasures:
-            return prev
+        if [row, col] in treasures:
+            return prev, row, col
 
         # Check adjacent cells
         for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
             next_row = row + dr
             next_col = col + dc
             if (
-                next_row >= 0 and next_row < rows and
-                next_col >= 0 and next_col < cols and
+                next_row >= 0 and next_row < maze_size and
+                next_col >= 0 and next_col < maze_size and
                 not visited[next_row][next_col] and
-                tuple(m[next_row][next_col]) not in walls
+                (next_row,next_col) not in walls
             ):
                 q.append((next_row, next_col))
                 visited[next_row][next_col] = True
@@ -105,67 +120,20 @@ def reconstructPath(start_row, start_col, end_row, end_col, prev):
     path.reverse()
     return path
 
-def bfs(start_row, start_col, end_row, end_col):
-    prev = solve(start_row, start_col)
+def bfs(start_row, start_col):
+    prev, row, col = solve(start_row, start_col)
     if prev is None:
         print("Caminho não encontrado.")
         return []
-    return reconstructPath(start_row, start_col, end_row, end_col, prev)
+    return reconstructPath(start_row, start_col, row, col, prev)
 
-
-def fullfillMap():
-    for treasure in treasures:
-        m[treasure[0]][treasure[1]] = 'T'
-    for wall in walls:
-        m[wall[0]][wall[1]] = '#'
-    for w in water:
-        m[w[0]][w[1]] = '~'
-    m[player_pos[0]][player_pos[1]] = 'P'
-    pass
-    
-
-m=[['.'] for a in range(maze_size) for x in range(maze_size)]
-rows = len(m)
-cols = len(m[0])
-start_row = 0
-start_col = 0
-end_row = 0
-end_col = 0
-
-for i in range(rows):
-    for j in range(cols):
-        if m[i][j] == 'S':
-            start_row = i
-            start_col = j
-        if m[i][j] == 'E':
-            end_row = i
-            end_col = j
-
-print("Labirinto:")
-for row in m:
-    print(' '.join(row))
-
-print("\nBuscando um caminho:")
-
-path = bfs(start_row, start_col, end_row, end_col)
-
-if len(path) > 0:
-    print("Caminho encontrado:")
-    for row, col in path:
-        m[row][col] = 'P'
-    for row in m:
-        print(' '.join(row))
-else:
-    print("Caminho não encontrado.")
-
-
-fullfillMap()
 
 
 slope = 0.5  # This is a placeholder; adjust your slope logic as needed
 water = generate_water(slope)
 
 walls = generate_walls()
+print(bfs(player_pos[0], player_pos[1]))
 
 #### Player movement
 #
@@ -199,7 +167,6 @@ def move_player():
     
     if random.randint(0, 5500) == 0:
       return 'GIVEUP'
-    dfs()
     return random.choice(['UP', 'DOWN', 'LEFT', 'RIGHT'])
     
 def manual_move():
@@ -226,6 +193,8 @@ def manual_move():
 running = True
 score = 0
 steps = 0
+fullfillMap()
+
 while running:
     # Random movement for now    
     direction = move_player()
@@ -284,7 +253,6 @@ while running:
         score -= 5
         print("In water! Paying heavier price:", [px, py])        
                 
-    
     pygame.display.flip()
     pygame.time.wait(100)  # Slow down the game a bit
     steps += 1

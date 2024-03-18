@@ -267,3 +267,15 @@ print(f"Found {found_treasures} treasures")
 final_score = (found_treasures * 500) + score
 print(f"Final score: {final_score}") 
 pygame.quit()
+
+
+
+
+
+
+
+
+# TODO
+# implementar logica para converter lista do path do bfs em up,down,left,right
+
+# colocar o bfs para rodar em loop em algum canto

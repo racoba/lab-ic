@@ -4,7 +4,6 @@ import math
 
 # Initialize Pygame
 pygame.init()
-
 # Maze dimensions
 width, height = 800, 800
 maze_size = 20  # Adjust for a more complex maze
@@ -64,44 +63,104 @@ def generate_water(slope):
 
     return water
 
-def dfs():
-    visitedRow = []
-    distanceRow = {}
-    adjRow = []
 
-                         #[x,y]
-    actualPos = [player_pos[0], player_pos[1] ]
-    actualPosDict = (player_pos[0], player_pos[1] )
+
+
+
+def solve(start_row, start_col):
+    q = []
+    q.append((start_row, start_col))
+    visited = [[False for i in range(cols)] for j in range(rows)]
+    visited[start_row][start_col] = True
+
+    prev = [[None for i in range(cols)] for j in range(rows)]
+    while len(q) > 0:
+        row, col = q.pop(0)
+        if tuple(m[row][col]) in treasures:
+            return prev
+
+        # Check adjacent cells
+        for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            next_row = row + dr
+            next_col = col + dc
+            if (
+                next_row >= 0 and next_row < rows and
+                next_col >= 0 and next_col < cols and
+                not visited[next_row][next_col] and
+                tuple(m[next_row][next_col]) not in walls
+            ):
+                q.append((next_row, next_col))
+                visited[next_row][next_col] = True
+                prev[next_row][next_col] = (row, col)
+
+    return None
+
+def reconstructPath(start_row, start_col, end_row, end_col, prev):
+    path = []
+    row, col = end_row, end_col
+    while (row, col) != (start_row, start_col):
+        path.append((row, col))
+        row, col = prev[row][col]
+    path.append((start_row, start_col))
+    path.reverse()
+    return path
+
+def bfs(start_row, start_col, end_row, end_col):
+    prev = solve(start_row, start_col)
+    if prev is None:
+        print("Caminho não encontrado.")
+        return []
+    return reconstructPath(start_row, start_col, end_row, end_col, prev)
+
+
+def fullfillMap():
+    for treasure in treasures:
+        m[treasure[0]][treasure[1]] = 'T'
+    for wall in walls:
+        m[wall[0]][wall[1]] = '#'
+    for w in water:
+        m[w[0]][w[1]] = '~'
+    m[player_pos[0]][player_pos[1]] = 'P'
+    pass
     
-    distanceRow[actualPosDict] = 0
-    
-    while actualPos not in treasures:
-        visitedRow.append(actualPos)
-       
-        up = actualPos[0] - 1 , actualPos[1]
-        down = actualPos[0] + 1 , actualPos[1]
-        left = actualPos[0], actualPos[1] -1
-        right = actualPos[0] , actualPos[1] + 1
-        
-        if up not in visitedRow:
-            adjRow.append({"up": up})
-            distanceRow[up] = distanceRow[actualPosDict] + 1
-        if down not in visitedRow:
-            adjRow.append({"down": down})
-            distanceRow[down] = distanceRow[actualPosDict] + 1
-        if left not in visitedRow:
-            adjRow.append({"left": left})
-            distanceRow[left] = distanceRow[actualPosDict] + 1
-        if right not in visitedRow:
-            adjRow.append({"right": right})
-            distanceRow[right] = distanceRow[actualPosDict] + 1
+
+m=[['.'] for a in range(maze_size) for x in range(maze_size)]
+rows = len(m)
+cols = len(m[0])
+start_row = 0
+start_col = 0
+end_row = 0
+end_col = 0
+
+for i in range(rows):
+    for j in range(cols):
+        if m[i][j] == 'S':
+            start_row = i
+            start_col = j
+        if m[i][j] == 'E':
+            end_row = i
+            end_col = j
+
+print("Labirinto:")
+for row in m:
+    print(' '.join(row))
+
+print("\nBuscando um caminho:")
+
+path = bfs(start_row, start_col, end_row, end_col)
+
+if len(path) > 0:
+    print("Caminho encontrado:")
+    for row, col in path:
+        m[row][col] = 'P'
+    for row in m:
+        print(' '.join(row))
+else:
+    print("Caminho não encontrado.")
 
 
-        actualPosDict = adjRow.pop(0)
-        actualPos[0] = actualPosDict[0]
-        actualPos[1] = actualPosDict[1]
-        print(actualPos)
-        
+fullfillMap()
+
 
 slope = 0.5  # This is a placeholder; adjust your slope logic as needed
 water = generate_water(slope)

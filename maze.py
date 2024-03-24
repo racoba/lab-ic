@@ -63,6 +63,25 @@ def fullfillMap():
     m[player_pos[0]][player_pos[1]] = 'P'
     pass
     
+def getPLayerMovmentByList(path):
+    tempPlayerPos = player_pos
+    movements = []
+    for p in path:
+        if p == (tempPlayerPos[0] + 1, tempPlayerPos[1]):
+            movements.append("DOWN")
+            tempPlayerPos = p
+        elif p == (tempPlayerPos[0] - 1, tempPlayerPos[1]):
+            movements.append("UP")
+            tempPlayerPos = p
+        elif p == (tempPlayerPos[0], tempPlayerPos[1] + 1):
+            movements.append("RIGHT")
+            tempPlayerPos = p
+        elif p == (tempPlayerPos[0], tempPlayerPos[1] - 1):
+            movements.append("LEFT")
+            tempPlayerPos = p
+        else: print("Caminho está errado")
+
+    return movements
 
 
 def generate_water(slope):
@@ -133,7 +152,6 @@ slope = 0.5  # This is a placeholder; adjust your slope logic as needed
 water = generate_water(slope)
 
 walls = generate_walls()
-print(bfs(player_pos[0], player_pos[1]))
 
 #### Player movement
 #
@@ -195,11 +213,14 @@ running = True
 score = 0
 steps = 0
 fullfillMap()
-
+bfsRes = bfs(player_pos[0], player_pos[1])
+movs = getPLayerMovmentByList(bfsRes)
 while running:
-    # Random movement for now    
-    direction = move_player()
-    #direction = manual_move() # Usar WASD
+    if len(movs) == 0:
+        movs = getPLayerMovmentByList(bfs(player_pos[0], player_pos[1]))
+    
+    direction = movs.pop(0)
+    print(direction)
     score -= 1
     
     next_pos = player_pos

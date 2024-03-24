@@ -104,6 +104,29 @@ def bfs(start_row, start_col):
         return []
     return reconstructPath(start_row, start_col, row, col, prev)
 
+
+def getPLayerMovmentByList(path):
+    tempPlayerPos = player_pos.copy()
+    movements = []
+    for p in path:
+        if p == (tempPlayerPos[0] + 1, tempPlayerPos[1]):
+            movements.append("DOWN")
+            tempPlayerPos = p
+        elif p == (tempPlayerPos[0] - 1, tempPlayerPos[1]):
+            movements.append("UP")
+            tempPlayerPos = p
+        elif p == (tempPlayerPos[0], tempPlayerPos[1] + 1):
+            movements.append("RIGHT")
+            tempPlayerPos = p
+        elif p == (tempPlayerPos[0], tempPlayerPos[1] - 1):
+            movements.append("LEFT")
+            tempPlayerPos = p
+        else: print("Caminho está errado")
+
+    return movements
+    
+
+
 if __name__ == '__main__':
     slope = 0.5  # This is a placeholder; adjust your slope logic as needed
     water = generate_water(slope)
@@ -111,4 +134,4 @@ if __name__ == '__main__':
     fullfillMap()
     for n in m:
         print(f"""{n}""")
-    print(bfs(player_pos[0], player_pos[1]))
+    print(getPLayerMovmentByList(bfs(player_pos[0], player_pos[1])))

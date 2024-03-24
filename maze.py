@@ -215,12 +215,13 @@ steps = 0
 fullfillMap()
 bfsRes = bfs(player_pos[0], player_pos[1])
 movs = getPLayerMovmentByList(bfsRes)
+
+# TEM ALGO AQUI Q TA MATANDO
 while running:
     if len(movs) == 0:
         movs = getPLayerMovmentByList(bfs(player_pos[0], player_pos[1]))
     
     direction = movs.pop(0)
-    print(direction)
     score -= 1
     
     next_pos = player_pos

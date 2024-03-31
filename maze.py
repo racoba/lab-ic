@@ -218,7 +218,6 @@ fullfillMap()
 bfsRes = bfs(player_pos[0], player_pos[1])
 movs = getPLayerMovmentByList(bfsRes)
 
-# TEM ALGO AQUI Q TA MATANDO
 while running:
     if len(movs) == 0 and steps < 80:
         movs = getPLayerMovmentByList(bfs(player_pos[0], player_pos[1]))
@@ -293,13 +292,3 @@ print(f"Final score: {final_score}")
 pygame.quit()
 
 
-
-
-
-
-
-
-# TODO
-# implementar logica para converter lista do path do bfs em up,down,left,right
-
-# colocar o bfs para rodar em loop em algum canto

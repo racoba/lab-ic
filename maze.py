@@ -35,7 +35,7 @@ player_pos = [random.randint(0, maze_size-1), random.randint(0, maze_size-1)]
 treasures = []
 for _ in range(NUM_TREASURES):  # Number of treasures
     while True:
-        treasure = [random.randint(0, maze_size-1), random.randint(0, maze_size-1)]
+        treasure = random.randint(0, maze_size-1), random.randint(0, maze_size-1)
         if treasure not in treasures and treasure != player_pos:
             treasures.append(treasure)
             break
@@ -45,10 +45,10 @@ def generate_walls():
     walls = []
     for i in range(1, maze_size-1):  # Avoid placing walls on the border
         for j in range(1, maze_size-1):
-            if [i,j] != player_pos \
-               and [i,j] not in treasures \
+            if (i,j) != player_pos \
+               and (i,j) not in treasures \
                and random.choice([True, False, False]):  
-                walls.append([i, j])
+                walls.append((i, j))
 
     return walls
 
@@ -79,6 +79,8 @@ def getPLayerMovmentByList(path):
         elif p == (tempPlayerPos[0], tempPlayerPos[1] - 1):
             movements.append("LEFT")
             tempPlayerPos = p
+        elif p == (tempPlayerPos[0], tempPlayerPos[1]):
+            continue
         else: print("Caminho está errado")
 
     return movements
@@ -95,7 +97,7 @@ def generate_water(slope):
     # Fill the square with water
     for i in range(start_x, start_x + water_size):
         for j in range(start_y, start_y + water_size):
-            water.append([i, j])
+            water.append((i, j))
 
     return water
 
@@ -110,7 +112,7 @@ def solve(start_row, start_col):
     prev = [[None for i in range(maze_size)] for j in range(maze_size)]
     while len(q) > 0:
         row, col = q.pop(0)
-        if [row, col] in treasures:
+        if (row, col) in treasures:
             return prev, row, col
 
         # Check adjacent cells
@@ -218,9 +220,8 @@ movs = getPLayerMovmentByList(bfsRes)
 
 # TEM ALGO AQUI Q TA MATANDO
 while running:
-    if len(movs) == 0:
+    if len(movs) == 0 and steps < 80:
         movs = getPLayerMovmentByList(bfs(player_pos[0], player_pos[1]))
-    
     direction = movs.pop(0)
     score -= 1
     
@@ -242,7 +243,7 @@ while running:
         
     #print(next_pos, maze_size)  
     px, py = next_pos          
-    if [px, py] not in walls \
+    if (px, py) not in walls \
        and 0 <= next_pos[0] < maze_size \
        and 0 <= next_pos[1] < maze_size:
         player_pos = next_pos
@@ -256,25 +257,25 @@ while running:
         for col in range(maze_size):
             
             rect = pygame.Rect(col*block_size, row*block_size, block_size, block_size)
-            if [col, row] in walls:
+            if (col, row) in walls:
                 pygame.draw.rect(screen, BLACK, rect)
-            elif [col, row] in water:
+            elif (col, row) in water:
                 pygame.draw.rect(screen, BLUE, rect)            
             else:
                 pygame.draw.rect(screen, WHITE, rect)
             if [col, row] == [px, py]:
                 pygame.draw.rect(screen, RED, rect)
-            elif [col, row] in treasures:
+            elif (col, row) in treasures:
                 pygame.draw.rect(screen, WHITE, rect)
                 screen.blit(treasure_image, (col*block_size, row*block_size))
 
-    if [px, py] in treasures:
-        treasures.remove([px, py])
+    if (px, py) in treasures:
+        treasures.remove((px, py))
         print("Treasure found! Treasures left:", len(treasures))
         
-    if [px, py] in water:
+    if (px, py) in water:
         score -= 5
-        print("In water! Paying heavier price:", [px, py])        
+        print("In water! Paying heavier price:", (px, py))        
                 
     pygame.display.flip()
     pygame.time.wait(100)  # Slow down the game a bit

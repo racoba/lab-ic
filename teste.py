@@ -109,6 +109,7 @@ def getPLayerMovmentByList(path):
     tempPlayerPos = player_pos.copy()
     movements = []
     for p in path:
+        print(p)
         if p == (tempPlayerPos[0] + 1, tempPlayerPos[1]):
             movements.append("DOWN")
             tempPlayerPos = p
@@ -121,6 +122,8 @@ def getPLayerMovmentByList(path):
         elif p == (tempPlayerPos[0], tempPlayerPos[1] - 1):
             movements.append("LEFT")
             tempPlayerPos = p
+        elif p == (tempPlayerPos[0], tempPlayerPos[1]):
+            continue
         else: print("Caminho está errado")
 
     return movements

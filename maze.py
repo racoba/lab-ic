@@ -52,6 +52,7 @@ def generate_walls():
 
     return walls
 
+# Preenche o mapa com respectivos simbolos. Melhorá o tratamento da matriz
 def fullfillMap():
     for treasure in treasures:
         
@@ -62,7 +63,8 @@ def fullfillMap():
         m[w[0]][w[1]] = '~'
     m[player_pos[0]][player_pos[1]] = 'P'
     pass
-    
+
+# Carrega uma lista de movimentos do player (UP, DOWN, LEFT, RIGHT) baseado na lista de pontos retornado do BFS entre o tesouro e o player 
 def getPLayerMovmentByList(path):
     tempPlayerPos = player_pos
     movements = []
@@ -102,7 +104,7 @@ def generate_water(slope):
     return water
 
 
-
+#Função que salva os lugares ja visitados do bfs e calcula o proximo a ser visitado
 def solve(start_row, start_col):
     q = []
     q.append((start_row, start_col))
@@ -131,6 +133,7 @@ def solve(start_row, start_col):
 
     return None
 
+# Função que retorna o caminho de pontos entre o tesouro e o player
 def reconstructPath(start_row, start_col, end_row, end_col, prev):
     path = []
     row, col = end_row, end_col
@@ -141,6 +144,7 @@ def reconstructPath(start_row, start_col, end_row, end_col, prev):
     path.reverse()
     return path
 
+# Função da arvore
 def bfs(start_row, start_col):
     prev, row, col = solve(start_row, start_col)
     if prev is None:
@@ -214,13 +218,15 @@ def manual_move():
 running = True
 score = 0
 steps = 0
-fullfillMap()
+fullfillMap() #PREENCHENDO O MAPA
 bfsRes = bfs(player_pos[0], player_pos[1])
 movs = getPLayerMovmentByList(bfsRes)
 
 while running:
+    #Se nao tiver mais nada na lista de movimentos (achou o tesouro) e ainda tiver passos para dar ele faz o BFS para o proximo tesouro
     if len(movs) == 0 and steps < 80:
         movs = getPLayerMovmentByList(bfs(player_pos[0], player_pos[1]))
+    #Pop da lista de movimentos para saber para onde deve andar
     direction = movs.pop(0)
     score -= 1
     
